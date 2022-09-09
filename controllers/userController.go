@@ -6,6 +6,7 @@ import (
 	"go-jwt/initializers"
 	"go-jwt/models"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 	"os"
 	"time"
 )
@@ -84,14 +85,19 @@ func Login(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "false to create token"})
 		return
 	}
+
+	// set cookie
+	ctx.SetSameSite(http.SameSiteLaxMode)
+	ctx.SetCookie("Authorization", tokenString, 3600*30*24, "", "", false, true)
 	// return value
 	ctx.JSON(200, gin.H{
-		"token": tokenString,
+		//"token": tokenString,
 	})
-	// set cookie
-
 }
 
 func Validate(ctx *gin.Context) {
-
+	user, _ := ctx.Get("user")
+	ctx.JSON(200, gin.H{
+		"message": user,
+	})
 }
